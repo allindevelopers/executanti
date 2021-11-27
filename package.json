@@ -8,9 +8,12 @@
 	"devDependencies": {
 		"@types/tailwindcss": "^2.2.4",
 		"autoprefixer": "^10.4.0",
+		"blockly": "^6.20210701.0",
+		"copy-webpack-plugin": "^10.0.0",
 		"nuxt3": "latest",
 		"postcss": "^8.4.3",
 		"prettier": "^2.5.0",
+		"sweetalert2": "^11.2.1",
 		"tailwindcss": "^2.2.19"
 	}
 }
