@@ -32,6 +32,7 @@ function editCell(index) {
 
 onMounted(() => {
 	const doc = grid.value.ownerDocument;
+	const size = 10;
 	const codes = [
 		"ArrowUp",
 		"ArrowRight",
@@ -39,6 +40,13 @@ onMounted(() => {
 		"ArrowLeft",
 		"Backspace",
 	];
+
+	const map: Record<string, (div: number, mod: number) => number> = {
+		ArrowUp: (div, mod) => rotate(div - 1, 0, size) * size + mod,
+		ArrowRight: (div, mod) => div * size + rotate(mod + 1, 0, size),
+		ArrowDown: (div, mod) => rotate(div + 1, 0, size) * size + mod,
+		ArrowLeft: (div, mod) => div * size + rotate(mod - 1, 0, size),
+	};
 
 	function listener(e: KeyboardEvent) {
 		if (document.activeElement.parentElement !== grid.value) return;
@@ -52,15 +60,10 @@ onMounted(() => {
 			return;
 		}
 
-		const index = {
-			ArrowUp: focusIndex - 10,
-			ArrowRight: focusIndex + 1,
-			ArrowDown: focusIndex + 10,
-			ArrowLeft: focusIndex - 1,
-		}[e.code];
-
-		const nextIndex = (index < 0 ? index + 100 : index) % 100;
-		const selector = `:scope button:nth-child(${nextIndex + 1})`;
+		const div = Math.floor(focusIndex / size);
+		const mod = focusIndex % size;
+		const index = map[e.code](div, mod);
+		const selector = `:scope button:nth-child(${index + 1})`;
 		const button = grid.value.querySelector<HTMLElement>(selector);
 		button.focus();
 	}
@@ -71,4 +74,7 @@ onMounted(() => {
 
 const clamp = (val: number, min: number = 0, max: number = 1): number =>
 	Math.max(min, Math.min(max, val));
+
+const rotate = (val: number, min: number = 0, max: number = 1): number =>
+	val < min ? val + max : val % max;
 </script>
