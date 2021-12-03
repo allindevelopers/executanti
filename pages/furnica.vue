@@ -40,20 +40,22 @@ const getEmptyCell = (): Cell => ({ type: EmptyType, char: undefined });
 const getCharCell = (char: string): Cell => ({ type: CharType, char });
 const getAntCell = (char: string): Cell => ({ type: AntType, char });
 
-const getGrid = (antIndex?: number) =>
-	Array.from({ length: 100 }, (_, index) =>
+function getGrid(antIndex?: number) {
+	return Array.from({ length: 100 }, (_, index) =>
 		antIndex === index ? getAntCell("🐜") : getEmptyCell()
 	);
+}
 
 const focusedCell = ref<Cell>();
 const grid = ref<HTMLElement>();
 const cells = ref(getGrid(54));
 const size = 10;
-const arrowCodes = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
-const controllCodes = ["Backspace", "Enter", "Escape"];
+type ArrowCodes = typeof arrowCodes[number];
+const arrowCodes = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"] as const;
+const controllCodes = ["Backspace", "Enter", "Escape"] as const;
 const allCodes = [...arrowCodes, ...controllCodes];
 
-const DirectionMap: Record<string, (div: number, mod: number) => number> = {
+const DirectionMap: Record<ArrowCodes, (div: number, mod: number) => number> = {
 	ArrowUp: (div, mod) => wrap(div - 1, 0, size) * size + mod,
 	ArrowRight: (div, mod) => div * size + wrap(mod + 1, 0, size),
 	ArrowDown: (div, mod) => wrap(div + 1, 0, size) * size + mod,
@@ -72,14 +74,14 @@ function setAsAnt() {
 	cells.value = cells.value.map(remove).map(set);
 }
 
-const MoveMap: Record<string, (div: number, mod: number) => number> = {
+const MoveMap: Record<ArrowCodes, (div: number, mod: number) => number> = {
 	ArrowUp: (div, mod) => clamp(div - 1, 0, size - 1) * size + mod,
 	ArrowRight: (div, mod) => div * size + clamp(mod + 1, 0, size - 1),
 	ArrowDown: (div, mod) => clamp(div + 1, 0, size - 1) * size + mod,
 	ArrowLeft: (div, mod) => div * size + clamp(mod - 1, 0, size - 1),
 };
 
-function moveAnt(direction: string) {
+function moveAnt(direction: ArrowCodes) {
 	const antIndex = cells.value.findIndex((cell) => cell.type === AntType);
 	if (antIndex < 0) return;
 	const { div, mod } = getDivMode(antIndex);
@@ -103,8 +105,8 @@ function clearBoard() {
 onMounted(() => {
 	const doc = grid.value.ownerDocument;
 	function listener(e: KeyboardEvent) {
-		if (document.activeElement.parentElement === grid.value) return;
-		if (!arrowCodes.includes(e.code)) return;
+		if (doc.activeElement.parentElement === grid.value) return;
+		if (!includes(arrowCodes, e.code)) return;
 		moveAnt(e.code);
 	}
 	doc.addEventListener("keydown", listener);
@@ -116,7 +118,7 @@ onMounted(() => {
 
 	function listener(e: KeyboardEvent) {
 		if (doc.activeElement.parentElement !== grid.value) return;
-		if (!allCodes.includes(e.code)) return;
+		if (!includes(allCodes, e.code)) return;
 
 		const children = [...grid.value.querySelectorAll("button")];
 		const focusElement = children.find((c) => c === doc.activeElement);
@@ -168,7 +170,9 @@ const swapItems = <T, _>(a: T[], i: number, j: number): T[] =>
 		]) ||
 	a;
 
-const sort = (arr: number[]): number[] => arr.sort((a, b) => a - b);
+function sort(arr: number[]): number[] {
+	return arr.sort((a, b) => a - b);
+}
 
 function getDivMode(n: number) {
 	const div = Math.floor(n / size);
@@ -181,5 +185,9 @@ function Button(props: any, { slots }) {
 	const classes = ["bg-gray-100 px-4 py-2 rounded", className];
 	const newProps = { ...rest, class: classes };
 	return h("button", newProps, slots);
+}
+
+function includes<T extends U, U>(coll: ReadonlyArray<T>, el: U): el is T {
+	return coll.includes(el as T);
 }
 </script>
