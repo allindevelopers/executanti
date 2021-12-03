@@ -1,35 +1,63 @@
 <template>
-	<div class="m-0.5 flex items-start gap-1">
-		<div
-			ref="grid"
-			class="p-0.5 gap-0.5 bg-gray-100 inline-grid grid-cols-10 grid-cols-[repeat(10,50px)] grid-rows-[repeat(10,50px)] shadow"
-		>
-			<button
-				v-for="(cell, i) in cells"
-				:id="`button-${i}`"
-				:key="i"
-				:class="[
-					'flex items-center justify-center text-3xl focus:outline-none',
-					'border border-dashed focus:border-red-600 focus:bg-red-100 bg-white',
-					{ 'bg-blue-100': cell.type === AntType },
-				]"
-				@focus="focusedCell = cell"
-			>
-				{{ cell.char }}
-			</button>
+	<Container>
+		<div class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200">
+			<textarea
+				class="flex-grow p-4 font-mono uppercase resize-none overflow-x-scroll"
+				placeholder="TODO: Code goes here..."
+			></textarea>
+			<div class="grid gap-px place-content-start">
+				<Button>Begin</Button>
+				<Button>End</Button>
+				<Button>Up</Button>
+				<Button>Down</Button>
+				<Button>Right</Button>
+				<Button>Left</Button>
+				<Button>While</Button>
+				<Button>Do</Button>
+				<Button>Repeat</Button>
+				<Button>Times</Button>
+				<Button>If</Button>
+				<Button>Then</Button>
+				<Button>Else</Button>
+				<Button>Is edge</Button>
+				<Button>Is not edge</Button>
+				<Button>Procedure</Button>
+				<Button>End ...</Button>
+			</div>
+			<div class="grid gap-px">
+				<div
+					ref="grid"
+					class="grid gap-px grid-cols-10 grid-cols-[repeat(10,50px)] grid-rows-[repeat(10,50px)]"
+				>
+					<button
+						v-for="(cell, i) in cells"
+						:id="`button-${i}`"
+						:key="i"
+						:class="[
+							'flex items-center justify-center text-3xl focus:outline-none',
+							'bg-white focus:bg-red-100',
+							{ 'bg-blue-100': cell.type === AntType },
+						]"
+						@focus="focusedCell = cell"
+					>
+						{{ cell.char }}
+					</button>
+				</div>
+				<div class="flex gap-px place-content-stretch">
+					<Button @click="setAsAnt">Set as Ant</Button>
+					<Button @click="moveAnt('ArrowUp')">Up</Button>
+					<Button @click="moveAnt('ArrowRight')">Right</Button>
+					<Button @click="moveAnt('ArrowDown')">Down</Button>
+					<Button @click="moveAnt('ArrowLeft')">Left</Button>
+					<Button @click="clearBoard">Clear Board</Button>
+				</div>
+			</div>
 		</div>
-		<div class="grid gap-0.5">
-			<Button @click="setAsAnt">Set as Ant</Button>
-			<Button @click="moveAnt('ArrowUp')">Up</Button>
-			<Button @click="moveAnt('ArrowRight')">Right</Button>
-			<Button @click="moveAnt('ArrowDown')">Down</Button>
-			<Button @click="moveAnt('ArrowLeft')">Left</Button>
-			<Button @click="clearBoard">Clear Board</Button>
-		</div>
-	</div>
+	</Container>
 </template>
 
 <script setup lang="ts">
+import { FunctionalComponent } from "vue";
 const EmptyType = Symbol.for("empty");
 const CharType = Symbol.for("char");
 const AntType = Symbol.for("ant");
@@ -182,7 +210,10 @@ function getDivMode(n: number) {
 
 function Button(props: any, { slots }) {
 	const { class: className, ...rest } = props;
-	const classes = ["bg-gray-100 px-4 py-2 rounded", className];
+	const classes = [
+		"bg-gray-100 active:bg-gray-200 px-4 py-2 uppercase",
+		className,
+	];
 	const newProps = { ...rest, class: classes };
 	return h("button", newProps, slots);
 }
@@ -190,4 +221,13 @@ function Button(props: any, { slots }) {
 function includes<T extends U, U>(coll: ReadonlyArray<T>, el: U): el is T {
 	return coll.includes(el as T);
 }
+
+type ContainerProps = {
+	class?: string;
+};
+const Container: FunctionalComponent<ContainerProps> = (props, { slots }) => {
+	const { class: className, ...rest } = props;
+	const classes = ["container mx-auto px-4", className];
+	return h("div", { ...rest, class: classes }, slots);
+};
 </script>
