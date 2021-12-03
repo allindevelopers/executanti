@@ -3,17 +3,20 @@
 	"scripts": {
 		"dev": "nuxi dev",
 		"build": "nuxi build",
-		"start": "node .output/server/index.mjs"
+		"start": "node .output/server/index.mjs",
+		"prepare": "husky install"
 	},
 	"devDependencies": {
 		"@types/tailwindcss": "^2.2.4",
 		"autoprefixer": "^10.4.0",
-		"blockly": "^6.20210701.0",
-		"copy-webpack-plugin": "^10.0.0",
+		"husky": "^7.0.4",
+		"lint-staged": "^12.1.2",
 		"nuxt3": "latest",
 		"postcss": "^8.4.3",
 		"prettier": "^2.5.0",
-		"sweetalert2": "^11.2.1",
 		"tailwindcss": "^2.2.19"
+	},
+	"lint-staged": {
+		"*.{js,ts,vue}": "prettier --write"
 	}
 }
