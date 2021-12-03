@@ -24,6 +24,7 @@
 			<Button @click="moveAnt('ArrowRight')">Right</Button>
 			<Button @click="moveAnt('ArrowDown')">Down</Button>
 			<Button @click="moveAnt('ArrowLeft')">Left</Button>
+			<Button @click="clearBoard">Clear Board</Button>
 		</div>
 	</div>
 </template>
@@ -39,13 +40,14 @@ const getEmptyCell = (): Cell => ({ type: EmptyType, char: undefined });
 const getCharCell = (char: string): Cell => ({ type: CharType, char });
 const getAntCell = (char: string): Cell => ({ type: AntType, char });
 
+const getGrid = (antIndex?: number) =>
+	Array.from({ length: 100 }, (_, index) =>
+		antIndex === index ? getAntCell("🐜") : getEmptyCell()
+	);
+
 const focusedCell = ref<Cell>();
 const grid = ref<HTMLElement>();
-const cells = ref(
-	Array.from({ length: 100 }, (_, index) =>
-		54 === index ? getAntCell("🐜") : getEmptyCell()
-	)
-);
+const cells = ref(getGrid(54));
 const size = 10;
 const arrowCodes = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
 const controllCodes = ["Backspace", "Enter", "Escape"];
@@ -92,6 +94,10 @@ function getChar() {
 	if (!text) return;
 	const [firstSymbol] = Array.from(text);
 	return firstSymbol.length !== 1 ? firstSymbol : firstSymbol.toUpperCase();
+}
+
+function clearBoard() {
+	cells.value = getGrid();
 }
 
 onMounted(() => {
