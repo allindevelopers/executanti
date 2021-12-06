@@ -182,7 +182,9 @@ async function run() {
 		sleep(speed.value).then(() => moveAnt(MoveMap[token]))
 	);
 
-	nextTick(() => (passed ? window.alert("SUCCESS") : window.alert("FAILED")));
+	setTimeout(() =>
+		passed ? window.alert("SUCCESS") : window.alert("FAILED")
+	);
 }
 
 onMounted(() => {
