@@ -1,3 +1,27 @@
+export const EmptyType = Symbol.for("empty");
+export const CharType = Symbol.for("char");
+export const AntType = Symbol.for("ant");
+type AnyType = typeof EmptyType | typeof CharType | typeof AntType;
+
+export type Cell = { type: AnyType; char?: string };
+export const getEmptyCell = (): Cell => ({ type: EmptyType, char: undefined });
+export const getCharCell = (char: string): Cell => ({ type: CharType, char });
+export const getAntCell = (char: string): Cell => ({ type: AntType, char });
+
+type CreateGridProps = {
+	antIndex?: number;
+	size?: number;
+	letters?: Record<number, string>;
+};
+export function createGrid(props: CreateGridProps = {}) {
+	const { antIndex, size = 10, letters = {} } = props;
+	return Array.from({ length: size * size }, (_, index) => {
+		if (antIndex === index) return getAntCell("🐜");
+		if (letters[index]) return getCharCell(letters[index]);
+		return getEmptyCell();
+	});
+}
+
 export function wrap(num: number, min: number, max: number): number {
 	const rangeSize = max - min;
 	return ((((num - min) % rangeSize) + rangeSize) % rangeSize) + min;

@@ -58,47 +58,26 @@ import Container from "~~/components/container.component";
 import Joystick from "~~/components/joystick.component.vue";
 import Button from "~~/components/button.component";
 import {
+	AntType,
 	ArrowCodes,
 	arrowCodes,
-	clamp,
+	Cell,
 	createClampGrid,
+	createGrid,
 	createWrapGrid,
-	getDivMod,
+	EmptyType,
+	getAntCell,
+	getCharCell,
+	getEmptyCell,
 	includes,
 	swapItems,
 } from "~~/utils";
 
-const EmptyType = Symbol.for("empty");
-const CharType = Symbol.for("char");
-const AntType = Symbol.for("ant");
-type AnyType = typeof EmptyType | typeof CharType | typeof AntType;
-
-type Cell = { type: AnyType; char?: string };
-const getEmptyCell = (): Cell => ({ type: EmptyType, char: undefined });
-const getCharCell = (char: string): Cell => ({ type: CharType, char });
-const getAntCell = (char: string): Cell => ({ type: AntType, char });
-
-type CreateGridProps = {
-	antIndex?: number;
-	size?: number;
-	letters?: Record<number, string>;
-};
-function createGrid(props: CreateGridProps = {}) {
-	const { antIndex, size = 10, letters = {} } = props;
-	return Array.from({ length: size * size }, (_, index) => {
-		if (antIndex === index) return getAntCell("🐜");
-		if (letters[index]) return getCharCell(letters[index]);
-		return getEmptyCell();
-	});
-}
-
 const letters = { 52: "A", 53: "N", 54: "T" };
-
 const focusedCell = ref<Cell>();
 const grid = ref<HTMLElement>();
 const cells = ref(createGrid({ antIndex: 11, letters }));
 const size = 10;
-
 const controllCodes = ["Backspace", "Enter", "Escape"] as const;
 const allCodes = [...arrowCodes, ...controllCodes];
 
