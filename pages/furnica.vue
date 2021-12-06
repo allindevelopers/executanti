@@ -24,7 +24,7 @@
 				<Button>Procedure</Button>
 				<Button>End ...</Button>
 			</div>
-			<div class="grid gap-px">
+			<div class="grid gap-px content-start">
 				<div
 					ref="grid"
 					class="grid gap-px grid-cols-10 grid-cols-[repeat(10,50px)] grid-rows-[repeat(10,50px)]"
@@ -43,13 +43,10 @@
 						{{ cell.char }}
 					</button>
 				</div>
-				<div class="flex gap-px place-content-stretch">
+				<div class="flex gap-px items-start">
 					<Button @click="setAsAnt">Set as Ant</Button>
-					<Button @click="moveAnt('ArrowUp')">Up</Button>
-					<Button @click="moveAnt('ArrowRight')">Right</Button>
-					<Button @click="moveAnt('ArrowDown')">Down</Button>
-					<Button @click="moveAnt('ArrowLeft')">Left</Button>
 					<Button @click="clearBoard">Clear Board</Button>
+					<Joystick class="ml-auto mr-4 mt-4" @click="moveAnt" />
 				</div>
 			</div>
 		</div>
@@ -58,6 +55,7 @@
 
 <script setup lang="ts">
 import { FunctionalComponent } from "vue";
+import Joystick from "~/components/joystick.component.vue";
 const EmptyType = Symbol.for("empty");
 const CharType = Symbol.for("char");
 const AntType = Symbol.for("ant");
