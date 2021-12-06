@@ -126,3 +126,19 @@ function expand(size: number, cb: (div: number, mod: number) => number) {
 		return cb(div, mod);
 	};
 }
+
+export const sleep = (ms: number) =>
+	new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function every<T>(
+	array: T[],
+	predicate: (value: T, index: number, array: T[]) => Promise<boolean>,
+	thisArg?: any
+): Promise<boolean> {
+	for (let i = 0; i < array.length; i++) {
+		const passed = await predicate.call(thisArg, array[i], i, array);
+		if (!passed) return false;
+	}
+
+	return true;
+}

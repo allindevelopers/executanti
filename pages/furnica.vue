@@ -3,26 +3,27 @@
 		<div class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200">
 			<textarea
 				class="flex-grow p-4 font-mono uppercase resize-none overflow-x-scroll"
-				placeholder="TODO: Code goes here..."
+				placeholder="Code goes here..."
+				v-model="textarea"
 			></textarea>
 			<div class="grid gap-px place-content-start">
-				<Button>Begin</Button>
-				<Button>End</Button>
-				<Button>Up</Button>
-				<Button>Down</Button>
-				<Button>Right</Button>
-				<Button>Left</Button>
-				<Button>While</Button>
-				<Button>Do</Button>
-				<Button>Repeat</Button>
-				<Button>Times</Button>
-				<Button>If</Button>
-				<Button>Then</Button>
-				<Button>Else</Button>
-				<Button>Is edge</Button>
-				<Button>Is not edge</Button>
-				<Button>Procedure</Button>
-				<Button>End ...</Button>
+				<Button disabled>Begin</Button>
+				<Button disabled>End</Button>
+				<Button @click="textarea += 'UP\n'">Up</Button>
+				<Button @click="textarea += 'DOWN\n'">Down</Button>
+				<Button @click="textarea += 'RIGHT\n'">Right</Button>
+				<Button @click="textarea += 'LEFT\n'">Left</Button>
+				<Button disabled>While</Button>
+				<Button disabled>Do</Button>
+				<Button disabled>Repeat</Button>
+				<Button disabled>Times</Button>
+				<Button disabled>If</Button>
+				<Button disabled>Then</Button>
+				<Button disabled>Else</Button>
+				<Button disabled>Is edge</Button>
+				<Button disabled>Is not edge</Button>
+				<Button disabled>Procedure</Button>
+				<Button disabled>End ...</Button>
 			</div>
 			<div class="grid gap-px content-start">
 				<div
@@ -44,9 +45,20 @@
 					</button>
 				</div>
 				<div class="flex gap-px items-start">
-					<Button @click="setAsAnt">Set as Ant</Button>
-					<Button @click="clearBoard">Clear Board</Button>
-					<Joystick class="ml-auto mr-4 mt-4" @click="moveAnt" />
+					<Joystick class="m-4" @click="joystickMove" />
+					<div class="grid">
+						<Button @click="run">Run</Button>
+						<Button @click="setAsAnt">Set as Ant</Button>
+						<Button @click="clearBoard">Clear Board</Button>
+						<Button @click="setSpeed">
+							Set Speed
+							<span class="lowercase">({{ speed / 1000 }}s)</span>
+						</Button>
+						<label class="p-3">
+							<input type="checkbox" v-model="record" />
+							<span class="ml-2">Record Joystick moves</span>
+						</label>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -66,13 +78,19 @@ import {
 	createGrid,
 	createWrapGrid,
 	EmptyType,
+	every,
 	getAntCell,
 	getCharCell,
 	getEmptyCell,
 	includes,
+	sleep,
 	swapItems,
 } from "~~/utils";
+import textareaInit from "~~/utils/textarea-init";
 
+const speed = ref(50);
+const textarea = ref(textareaInit);
+const record = ref(false);
 const letters = { 52: "A", 53: "N", 54: "T" };
 const focusedCell = ref<Cell>();
 const grid = ref<HTMLElement>();
@@ -96,15 +114,26 @@ function setAsAnt() {
 	cells.value = cells.value.map(remove).map(set);
 }
 
-function moveAnt(direction: ArrowCodes) {
+function joystickMove(direction: ArrowCodes) {
+	const MoveMap: Record<ArrowCodes, string> = {
+		ArrowUp: "UP",
+		ArrowDown: "DOWN",
+		ArrowLeft: "LEFT",
+		ArrowRight: "RIGHT",
+	};
+	if (record.value) textarea.value += `${MoveMap[direction]}\n`;
+	moveAnt(direction);
+}
+
+function moveAnt(direction: ArrowCodes): boolean {
 	const antIndex = cells.value.findIndex((cell) => cell.type === AntType);
 
 	// Ant is missing on grid
-	if (antIndex < 0) return;
+	if (antIndex < 0) return false;
 
 	const newIndex = clampGrid(direction, antIndex);
 	// Hit the wall
-	if (antIndex === newIndex) return;
+	if (antIndex === newIndex) return false;
 
 	const moveIndex = clampGrid(direction, newIndex);
 	// Try to move cell only if not wall and next is empty
@@ -112,8 +141,9 @@ function moveAnt(direction: ArrowCodes) {
 		cells.value = swapItems(cells.value, newIndex, moveIndex);
 	}
 
-	if (cells.value[newIndex].type !== EmptyType) return;
+	if (cells.value[newIndex].type !== EmptyType) return false;
 	cells.value = swapItems(cells.value, antIndex, newIndex);
+	return true;
 }
 
 function getChar() {
@@ -123,8 +153,36 @@ function getChar() {
 	return firstSymbol.length !== 1 ? firstSymbol : firstSymbol.toUpperCase();
 }
 
+function setSpeed() {
+	const text = window.prompt("Number of seconds");
+	try {
+		speed.value = Number.parseFloat(text) * 1000;
+	} catch {}
+}
+
 function clearBoard() {
 	cells.value = createGrid();
+}
+
+async function run() {
+	const tokens = textarea.value
+		.toUpperCase()
+		.split("\n")
+		.map((t) => t.trim())
+		.filter(Boolean);
+
+	const MoveMap: Record<string, ArrowCodes> = {
+		UP: "ArrowUp",
+		DOWN: "ArrowDown",
+		LEFT: "ArrowLeft",
+		RIGHT: "ArrowRight",
+	};
+
+	const passed = await every(tokens, async (token) =>
+		sleep(speed.value).then(() => moveAnt(MoveMap[token]))
+	);
+
+	nextTick(() => (passed ? window.alert("SUCCESS") : window.alert("FAILED")));
 }
 
 onMounted(() => {
