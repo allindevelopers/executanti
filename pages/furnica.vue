@@ -54,8 +54,20 @@
 </template>
 
 <script setup lang="ts">
-import { FunctionalComponent } from "vue";
-import Joystick from "~/components/joystick.component.vue";
+import Container from "~~/components/container.component";
+import Joystick from "~~/components/joystick.component.vue";
+import Button from "~~/components/button.component";
+import {
+	ArrowCodes,
+	arrowCodes,
+	clamp,
+	createClampGrid,
+	createWrapGrid,
+	getDivMod,
+	includes,
+	swapItems,
+} from "~~/utils";
+
 const EmptyType = Symbol.for("empty");
 const CharType = Symbol.for("char");
 const AntType = Symbol.for("ant");
@@ -86,18 +98,12 @@ const focusedCell = ref<Cell>();
 const grid = ref<HTMLElement>();
 const cells = ref(createGrid({ antIndex: 11, letters }));
 const size = 10;
-type ArrowCodes = typeof arrowCodes[number];
-const arrowCodes = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"] as const;
+
 const controllCodes = ["Backspace", "Enter", "Escape"] as const;
 const allCodes = [...arrowCodes, ...controllCodes];
 
-// Move to other side of the grid when margin
-const WrapMap: Record<ArrowCodes, (index: number) => number> = {
-	ArrowUp: expand((div, mod) => wrap(div - 1, 0, size) * size + mod),
-	ArrowRight: expand((div, mod) => div * size + wrap(mod + 1, 0, size)),
-	ArrowDown: expand((div, mod) => wrap(div + 1, 0, size) * size + mod),
-	ArrowLeft: expand((div, mod) => div * size + wrap(mod - 1, 0, size)),
-};
+const wrapGrid = createWrapGrid(size);
+const clampGrid = createClampGrid(size);
 
 function setAsAnt() {
 	const cellIndex = cells.value.indexOf(focusedCell.value);
@@ -111,25 +117,17 @@ function setAsAnt() {
 	cells.value = cells.value.map(remove).map(set);
 }
 
-// Stop moving when is margin of grid
-const ClampMap: Record<ArrowCodes, (index: number) => number> = {
-	ArrowUp: expand((div, mod) => clamp(div - 1, 0, size - 1) * size + mod),
-	ArrowRight: expand((div, mod) => div * size + clamp(mod + 1, 0, size - 1)),
-	ArrowDown: expand((div, mod) => clamp(div + 1, 0, size - 1) * size + mod),
-	ArrowLeft: expand((div, mod) => div * size + clamp(mod - 1, 0, size - 1)),
-};
-
 function moveAnt(direction: ArrowCodes) {
 	const antIndex = cells.value.findIndex((cell) => cell.type === AntType);
 
 	// Ant is missing on grid
 	if (antIndex < 0) return;
 
-	const newIndex = ClampMap[direction](antIndex);
+	const newIndex = clampGrid(direction, antIndex);
 	// Hit the wall
 	if (antIndex === newIndex) return;
 
-	const moveIndex = ClampMap[direction](newIndex);
+	const moveIndex = clampGrid(direction, newIndex);
 	// Try to move cell only if not wall and next is empty
 	if (moveIndex !== newIndex && cells.value[moveIndex].type === EmptyType) {
 		cells.value = swapItems(cells.value, newIndex, moveIndex);
@@ -187,7 +185,7 @@ onMounted(() => {
 			return;
 		}
 
-		const nextIndex = WrapMap[e.code](focusIndex);
+		const nextIndex = wrapGrid(e.code, focusIndex);
 		const selector = `:scope button:nth-child(${nextIndex + 1})`;
 		const button = grid.value.querySelector<HTMLElement>(selector);
 		button.focus();
@@ -196,68 +194,4 @@ onMounted(() => {
 	doc.addEventListener("keydown", listener);
 	onUnmounted(() => doc.removeEventListener("keydown", listener));
 });
-
-function wrap(num: number, min: number, max: number): number {
-	const rangeSize = max - min;
-	return ((((num - min) % rangeSize) + rangeSize) % rangeSize) + min;
-}
-
-function clamp(val: number, min: number = 0, max: number = 1): number {
-	return Math.max(min, Math.min(max, val));
-}
-
-const swapItems = <T, _>(a: T[], i: number, j: number): T[] => {
-	const [first, second] = sort([i, j]);
-	return (
-		(a[first] &&
-			a[second] && [
-				...a.slice(0, first),
-				a[second],
-				...a.slice(first + 1, second),
-				a[first],
-				...a.slice(second + 1),
-			]) ||
-		a
-	);
-};
-
-function sort(arr: number[]): number[] {
-	return arr.sort((a, b) => a - b);
-}
-
-function getDivMod(n: number) {
-	const div = Math.floor(n / size);
-	const mod = n % size;
-	return { div, mod };
-}
-
-function Button(props: any, { slots }) {
-	const { class: className, ...rest } = props;
-	const classes = [
-		"bg-gray-100 active:bg-gray-200 px-4 py-2 uppercase",
-		className,
-	];
-	const newProps = { ...rest, class: classes };
-	return h("button", newProps, slots);
-}
-
-function includes<T extends U, U>(coll: ReadonlyArray<T>, el: U): el is T {
-	return coll.includes(el as T);
-}
-
-type ContainerProps = {
-	class?: string;
-};
-const Container: FunctionalComponent<ContainerProps> = (props, { slots }) => {
-	const { class: className, ...rest } = props;
-	const classes = ["container mx-auto px-4", className];
-	return h("div", { ...rest, class: classes }, slots);
-};
-
-function expand(cb: (div: number, mod: number) => number) {
-	return (index: number) => {
-		const { div, mod } = getDivMod(index);
-		return cb(div, mod);
-	};
-}
 </script>
