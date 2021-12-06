@@ -68,26 +68,37 @@ const getEmptyCell = (): Cell => ({ type: EmptyType, char: undefined });
 const getCharCell = (char: string): Cell => ({ type: CharType, char });
 const getAntCell = (char: string): Cell => ({ type: AntType, char });
 
-function getGrid(antIndex?: number) {
-	return Array.from({ length: 100 }, (_, index) =>
-		antIndex === index ? getAntCell("🐜") : getEmptyCell()
-	);
+type CreateGridProps = {
+	antIndex?: number;
+	size?: number;
+	letters?: Record<number, string>;
+};
+function createGrid(props: CreateGridProps = {}) {
+	const { antIndex, size = 10, letters = {} } = props;
+	return Array.from({ length: size * size }, (_, index) => {
+		if (antIndex === index) return getAntCell("🐜");
+		if (letters[index]) return getCharCell(letters[index]);
+		return getEmptyCell();
+	});
 }
+
+const letters = { 52: "A", 53: "N", 54: "T" };
 
 const focusedCell = ref<Cell>();
 const grid = ref<HTMLElement>();
-const cells = ref(getGrid(54));
+const cells = ref(createGrid({ antIndex: 11, letters }));
 const size = 10;
 type ArrowCodes = typeof arrowCodes[number];
 const arrowCodes = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"] as const;
 const controllCodes = ["Backspace", "Enter", "Escape"] as const;
 const allCodes = [...arrowCodes, ...controllCodes];
 
-const DirectionMap: Record<ArrowCodes, (div: number, mod: number) => number> = {
-	ArrowUp: (div, mod) => wrap(div - 1, 0, size) * size + mod,
-	ArrowRight: (div, mod) => div * size + wrap(mod + 1, 0, size),
-	ArrowDown: (div, mod) => wrap(div + 1, 0, size) * size + mod,
-	ArrowLeft: (div, mod) => div * size + wrap(mod - 1, 0, size),
+// Move to other side of the grid when margin
+const WrapMap: Record<ArrowCodes, (index: number) => number> = {
+	ArrowUp: expand((div, mod) => wrap(div - 1, 0, size) * size + mod),
+	ArrowRight: expand((div, mod) => div * size + wrap(mod + 1, 0, size)),
+	ArrowDown: expand((div, mod) => wrap(div + 1, 0, size) * size + mod),
+	ArrowLeft: expand((div, mod) => div * size + wrap(mod - 1, 0, size)),
 };
 
 function setAsAnt() {
@@ -102,21 +113,32 @@ function setAsAnt() {
 	cells.value = cells.value.map(remove).map(set);
 }
 
-const MoveMap: Record<ArrowCodes, (div: number, mod: number) => number> = {
-	ArrowUp: (div, mod) => clamp(div - 1, 0, size - 1) * size + mod,
-	ArrowRight: (div, mod) => div * size + clamp(mod + 1, 0, size - 1),
-	ArrowDown: (div, mod) => clamp(div + 1, 0, size - 1) * size + mod,
-	ArrowLeft: (div, mod) => div * size + clamp(mod - 1, 0, size - 1),
+// Stop moving when is margin of grid
+const ClampMap: Record<ArrowCodes, (index: number) => number> = {
+	ArrowUp: expand((div, mod) => clamp(div - 1, 0, size - 1) * size + mod),
+	ArrowRight: expand((div, mod) => div * size + clamp(mod + 1, 0, size - 1)),
+	ArrowDown: expand((div, mod) => clamp(div + 1, 0, size - 1) * size + mod),
+	ArrowLeft: expand((div, mod) => div * size + clamp(mod - 1, 0, size - 1)),
 };
 
 function moveAnt(direction: ArrowCodes) {
 	const antIndex = cells.value.findIndex((cell) => cell.type === AntType);
+
+	// Ant is missing on grid
 	if (antIndex < 0) return;
-	const { div, mod } = getDivMode(antIndex);
-	const newIndex = MoveMap[direction](div, mod);
+
+	const newIndex = ClampMap[direction](antIndex);
+	// Hit the wall
 	if (antIndex === newIndex) return;
-	const [first, last] = sort([antIndex, newIndex]);
-	cells.value = swapItems(cells.value, first, last);
+
+	const moveIndex = ClampMap[direction](newIndex);
+	// Try to move cell only if not wall and next is empty
+	if (moveIndex !== newIndex && cells.value[moveIndex].type === EmptyType) {
+		cells.value = swapItems(cells.value, newIndex, moveIndex);
+	}
+
+	if (cells.value[newIndex].type !== EmptyType) return;
+	cells.value = swapItems(cells.value, antIndex, newIndex);
 }
 
 function getChar() {
@@ -127,7 +149,7 @@ function getChar() {
 }
 
 function clearBoard() {
-	cells.value = getGrid();
+	cells.value = createGrid();
 }
 
 onMounted(() => {
@@ -167,8 +189,7 @@ onMounted(() => {
 			return;
 		}
 
-		const { div, mod } = getDivMode(focusIndex);
-		const nextIndex = DirectionMap[e.code](div, mod);
+		const nextIndex = WrapMap[e.code](focusIndex);
 		const selector = `:scope button:nth-child(${nextIndex + 1})`;
 		const button = grid.value.querySelector<HTMLElement>(selector);
 		button.focus();
@@ -187,22 +208,26 @@ function clamp(val: number, min: number = 0, max: number = 1): number {
 	return Math.max(min, Math.min(max, val));
 }
 
-const swapItems = <T, _>(a: T[], i: number, j: number): T[] =>
-	(a[i] &&
-		a[j] && [
-			...a.slice(0, i),
-			a[j],
-			...a.slice(i + 1, j),
-			a[i],
-			...a.slice(j + 1),
-		]) ||
-	a;
+const swapItems = <T, _>(a: T[], i: number, j: number): T[] => {
+	const [first, second] = sort([i, j]);
+	return (
+		(a[first] &&
+			a[second] && [
+				...a.slice(0, first),
+				a[second],
+				...a.slice(first + 1, second),
+				a[first],
+				...a.slice(second + 1),
+			]) ||
+		a
+	);
+};
 
 function sort(arr: number[]): number[] {
 	return arr.sort((a, b) => a - b);
 }
 
-function getDivMode(n: number) {
+function getDivMod(n: number) {
 	const div = Math.floor(n / size);
 	const mod = n % size;
 	return { div, mod };
@@ -230,4 +255,11 @@ const Container: FunctionalComponent<ContainerProps> = (props, { slots }) => {
 	const classes = ["container mx-auto px-4", className];
 	return h("div", { ...rest, class: classes }, slots);
 };
+
+function expand(cb: (div: number, mod: number) => number) {
+	return (index: number) => {
+		const { div, mod } = getDivMod(index);
+		return cb(div, mod);
+	};
+}
 </script>
