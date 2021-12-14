@@ -18,8 +18,8 @@
 				{{ cell.char }}
 			</button>
 		</div>
-		<div :class="['fixed bottom-4 right-4 md:static']">
-			<Joystick @click="joystickMove" />
+		<div class="fixed bottom-0 right-0 md:static m-4">
+			<Joystick @click="joystickMove" v-model:record="record" />
 		</div>
 		<div class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200">
 			<textarea
@@ -56,10 +56,6 @@
 							Set Speed
 							<span class="lowercase">({{ speed / 1000 }}s)</span>
 						</Button>
-						<label class="p-3">
-							<input type="checkbox" v-model="record" />
-							<span class="ml-2">Record Joystick moves</span>
-						</label>
 					</div>
 				</div>
 			</div>
