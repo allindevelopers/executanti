@@ -8,6 +8,7 @@
 		"grammar": "npx nodemon -e ne,mjs,ant grammars/index.mjs"
 	},
 	"devDependencies": {
+		"@tailwindcss/forms": "^0.4.0",
 		"@types/moo": "^0.5.5",
 		"@types/nearley": "^2.11.2",
 		"@types/tailwindcss": "^2.2.4",

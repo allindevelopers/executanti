@@ -7,4 +7,5 @@ module.exports = {
 		`./plugins/**/*.{js,ts}`,
 		`./nuxt.config.ts`,
 	],
+	plugins: [require("@tailwindcss/forms")],
 };

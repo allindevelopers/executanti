@@ -1,8 +1,8 @@
 <template>
-	<Container class="py-4">
+	<Container class="py-4 max-w-lg">
 		<div
 			ref="grid"
-			class="grid gap-px bg-gray-200 p-px grid-cols-10 grid-rows-10 max-w-lg mx-auto text-lg sm:text-2xl"
+			class="grid gap-px bg-gray-200 p-px grid-cols-10 grid-rows-10 text-lg sm:text-2xl"
 		>
 			<button
 				v-for="(cell, i) in cells"
@@ -18,11 +18,10 @@
 				{{ cell.char }}
 			</button>
 		</div>
-		<Joystick class="fixed bottom-4 right-4" @click="joystickMove" />
-		<div
-			class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200"
-			v-if="false"
-		>
+		<div :class="['fixed bottom-4 right-4 md:static']">
+			<Joystick @click="joystickMove" />
+		</div>
+		<div class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200">
 			<textarea
 				class="flex-grow p-4 font-mono uppercase resize-none overflow-x-scroll"
 				placeholder="Code goes here..."
