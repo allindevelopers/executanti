@@ -18,7 +18,7 @@
 				{{ cell.char }}
 			</button>
 		</div>
-		<Joystick class="absolute bottom-4 right-4" @click="joystickMove" />
+		<Joystick class="fixed bottom-4 right-4" @click="joystickMove" />
 		<div
 			class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200"
 			v-if="false"
