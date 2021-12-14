@@ -63,7 +63,9 @@ export default defineComponent({
 function Button(props: any, { slots }) {
 	const { class: className, color = "text-yellow-400", ...rest } = props;
 	const classes = [
-		"bg-white focus:outline-none focus:ring-1 ring-yellow-400 rounded-xl hover:bg-gray-50 shadow-md active:shadow flex items-center justify-center select-none",
+		"flex items-center justify-center rounded-xl",
+		"bg-white hover:bg-gray-50 shadow-md active:shadow",
+		"outline-none focus:ring-1 ring-yellow-400",
 		color,
 		className,
 	];
