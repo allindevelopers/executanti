@@ -1,6 +1,28 @@
 <template>
-	<Container>
-		<div class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200">
+	<Container class="py-4">
+		<div
+			ref="grid"
+			class="grid gap-px bg-gray-200 p-px grid-cols-10 grid-rows-10 max-w-lg mx-auto text-lg sm:text-2xl"
+		>
+			<button
+				v-for="(cell, i) in cells"
+				:key="i"
+				:class="[
+					'flex items-center justify-center aspect-[1/1]',
+					'bg-white focus:bg-red-100 outline-none',
+					{ 'bg-blue-100': cell.type === AntType },
+				]"
+				@focus="cellFocus(cell)"
+				@click="cellClick(cell)"
+			>
+				{{ cell.char }}
+			</button>
+		</div>
+		<Joystick class="absolute bottom-4 right-4" @click="joystickMove" />
+		<div
+			class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200"
+			v-if="false"
+		>
 			<textarea
 				class="flex-grow p-4 font-mono uppercase resize-none overflow-x-scroll"
 				placeholder="Code goes here..."
@@ -26,26 +48,7 @@
 				<Button disabled>End ...</Button>
 			</div>
 			<div class="grid gap-px content-start">
-				<div
-					ref="grid"
-					class="grid gap-px grid-cols-10 grid-cols-[repeat(10,50px)] grid-rows-[repeat(10,50px)]"
-				>
-					<button
-						v-for="(cell, i) in cells"
-						:id="`button-${i}`"
-						:key="i"
-						:class="[
-							'flex items-center justify-center text-3xl focus:outline-none',
-							'bg-white focus:bg-red-100',
-							{ 'bg-blue-100': cell.type === AntType },
-						]"
-						@focus="focusedCell = cell"
-					>
-						{{ cell.char }}
-					</button>
-				</div>
 				<div class="flex gap-px items-start">
-					<Joystick class="m-4" @click="joystickMove" />
 					<div class="grid">
 						<Button @click="run">Run</Button>
 						<Button @click="setAsAnt">Set as Ant</Button>
@@ -94,8 +97,8 @@ const record = ref(false);
 const letters = { 52: "A", 53: "N", 54: "T" };
 const focusedCell = ref<Cell>();
 const grid = ref<HTMLElement>();
-const cells = ref(createGrid({ antIndex: 11, letters }));
 const size = 10;
+const cells = ref(createGrid({ antIndex: 11, letters, size }));
 const controllCodes = ["Backspace", "Enter", "Escape"] as const;
 const allCodes = [...arrowCodes, ...controllCodes];
 
@@ -114,15 +117,25 @@ function setAsAnt() {
 	cells.value = cells.value.map(remove).map(set);
 }
 
+const MoveMap: Record<ArrowCodes, string> = {
+	ArrowUp: "UP",
+	ArrowDown: "DOWN",
+	ArrowLeft: "LEFT",
+	ArrowRight: "RIGHT",
+};
+
 function joystickMove(direction: ArrowCodes) {
-	const MoveMap: Record<ArrowCodes, string> = {
-		ArrowUp: "UP",
-		ArrowDown: "DOWN",
-		ArrowLeft: "LEFT",
-		ArrowRight: "RIGHT",
-	};
 	if (record.value) textarea.value += `${MoveMap[direction]}\n`;
 	moveAnt(direction);
+}
+
+function cellFocus(cell: Cell) {
+	focusedCell.value = cell;
+}
+
+function cellClick(cell: Cell) {
+	const newCell = getCharCell(getChar());
+	cells.value = cells.value.map((c) => (c !== cell ? c : newCell));
 }
 
 function moveAnt(direction: ArrowCodes): boolean {
@@ -161,7 +174,7 @@ function setSpeed() {
 }
 
 function clearBoard() {
-	cells.value = createGrid();
+	cells.value = createGrid({ size });
 }
 
 async function run() {
