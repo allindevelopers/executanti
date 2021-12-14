@@ -1,0 +1,8 @@
+BEGIN
+	LEFT
+	RIGHT
+	UP
+	DOWN
+	DOWN
+	UP
+END

@@ -4,13 +4,19 @@
 		"dev": "nuxi dev",
 		"build": "nuxi build",
 		"start": "node .output/server/index.mjs",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"grammar": "npx nodemon -e ne,mjs,ant grammars/index.mjs"
 	},
 	"devDependencies": {
+		"@types/moo": "^0.5.5",
+		"@types/nearley": "^2.11.2",
 		"@types/tailwindcss": "^2.2.4",
 		"autoprefixer": "^10.4.0",
 		"husky": "^7.0.4",
 		"lint-staged": "^12.1.2",
+		"moo": "^0.5.1",
+		"nearley": "^2.20.1",
+		"nodemon": "^2.0.15",
 		"nuxt3": "latest",
 		"postcss": "^8.4.3",
 		"prettier": "^2.5.0",

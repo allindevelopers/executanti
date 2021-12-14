@@ -1,0 +1,29 @@
+{
+	"type": "block",
+	"value": [
+		{
+			"type": "operation",
+			"value": "LEFT"
+		},
+		{
+			"type": "operation",
+			"value": "RIGHT"
+		},
+		{
+			"type": "operation",
+			"value": "UP"
+		},
+		{
+			"type": "operation",
+			"value": "DOWN"
+		},
+		{
+			"type": "operation",
+			"value": "DOWN"
+		},
+		{
+			"type": "operation",
+			"value": "UP"
+		}
+	]
+}
