@@ -2,7 +2,7 @@
 	<Container class="py-4 max-w-lg">
 		<div
 			ref="grid"
-			class="grid gap-px bg-gray-200 p-px grid-cols-10 grid-rows-10 text-lg sm:text-2xl"
+			class="grid gap-px bg-gray-200 grid-cols-10 grid-rows-10 text-lg sm:text-2xl rounded-xl border overflow-hidden"
 		>
 			<button
 				v-for="(cell, i) in cells"
@@ -13,22 +13,52 @@
 					{ 'bg-blue-100': cell.type === AntType },
 				]"
 				@focus="cellFocus(cell)"
-				@click="cellClick(cell)"
 			>
 				{{ cell.char }}
 			</button>
 		</div>
-		<div class="fixed bottom-0 right-0 md:static m-4">
+		<div
+			class="grid gap-px grid-cols-7 sm:grid-cols-10 my-4 border border-transparent"
+		>
+			<Control @click="run" class="rounded-l-xl" title="Run">
+				<PlayIcon class="h-6 w-6" />
+			</Control>
+			<Control @click="cellEdit" title="Edit focused cell">
+				<EditIcon class="h-6 w-6" />
+			</Control>
+			<Control
+				@click="setSpeed"
+				:title="`Set speed (${speed / 1000} seconds)`"
+				class="relative"
+			>
+				<BoltIcon class="h-6 w-6" />
+				<span
+					class="absolute lowercase text-gray-400 text-xs right-1 bottom-px"
+				>
+					{{ speed / 1000 }}s
+				</span>
+			</Control>
+			<Control @click="setAsAnt" title="Set current cell as Ant">
+				🐜
+			</Control>
+			<Control @click="clearBoard" title="Clear board">
+				<TrashIcon class="h-6 w-6" />
+			</Control>
+			<Control @click="helpClick" class="rounded-r-xl">
+				<QuestionIcon class="h-6 w-6" />
+			</Control>
+		</div>
+		<div class="fixed bottom-0 right-0 m-4">
 			<Joystick @click="joystickMove" v-model:record="record" />
 		</div>
-		<div class="mt-4 mx-auto flex p-px gap-px max-w-max bg-gray-200">
+		<div class="my-4 flex gap-px bg-gray-200 rounded-xl">
 			<textarea
-				class="flex-grow p-4 font-mono uppercase resize-none overflow-x-scroll"
+				class="flex-grow p-4 font-mono uppercase resize-none rounded-l-xl border-r-1"
 				placeholder="Code goes here..."
 				v-model="textarea"
 			></textarea>
-			<div class="grid gap-px place-content-start">
-				<Button disabled>Begin</Button>
+			<div class="grid gap-px border-r border-t border-b rounded-xl">
+				<Button disabled class="rounded-tr-xl">Begin</Button>
 				<Button disabled>End</Button>
 				<Button @click="textarea += 'UP\n'">Up</Button>
 				<Button @click="textarea += 'DOWN\n'">Down</Button>
@@ -44,20 +74,7 @@
 				<Button disabled>Is edge</Button>
 				<Button disabled>Is not edge</Button>
 				<Button disabled>Procedure</Button>
-				<Button disabled>End ...</Button>
-			</div>
-			<div class="grid gap-px content-start">
-				<div class="flex gap-px items-start">
-					<div class="grid">
-						<Button @click="run">Run</Button>
-						<Button @click="setAsAnt">Set as Ant</Button>
-						<Button @click="clearBoard">Clear Board</Button>
-						<Button @click="setSpeed">
-							Set Speed
-							<span class="lowercase">({{ speed / 1000 }}s)</span>
-						</Button>
-					</div>
-				</div>
+				<Button disabled class="rounded-br-xl">End ...</Button>
 			</div>
 		</div>
 	</Container>
@@ -67,6 +84,11 @@
 import Container from "~~/components/container.component";
 import Joystick from "~~/components/joystick.component.vue";
 import Button from "~~/components/button.component";
+import PlayIcon from "~~/components/play.component.vue";
+import TrashIcon from "~~/components/trash.component.vue";
+import BoltIcon from "~~/components/bolt.component.vue";
+import EditIcon from "~~/components/edit.component.vue";
+import QuestionIcon from "~~/components/question.component.vue";
 import {
 	AntType,
 	ArrowCodes,
@@ -124,13 +146,20 @@ function joystickMove(direction: ArrowCodes) {
 	moveAnt(direction);
 }
 
-function cellFocus(cell: Cell) {
+function cellFocus(cell?: Cell) {
 	focusedCell.value = cell;
 }
 
-function cellClick(cell: Cell) {
+function cellEdit() {
+	if (!focusedCell.value) return;
 	const newCell = getCharCell(getChar());
-	cells.value = cells.value.map((c) => (c !== cell ? c : newCell));
+	cells.value = cells.value.map((c) =>
+		c !== focusedCell.value ? c : newCell
+	);
+}
+
+function helpClick() {
+	window.alert("Guide coming soon!");
 }
 
 function moveAnt(direction: ArrowCodes): boolean {
@@ -155,21 +184,25 @@ function moveAnt(direction: ArrowCodes): boolean {
 }
 
 function getChar() {
-	const text = window.prompt();
+	const text = window.prompt("Enter a character for cell. Can be emoji");
 	if (!text) return;
 	const [firstSymbol] = Array.from(text);
 	return firstSymbol.length !== 1 ? firstSymbol : firstSymbol.toUpperCase();
 }
 
 function setSpeed() {
-	const text = window.prompt("Number of seconds");
+	const text = window.prompt("Number of seconds for Ant to run");
 	try {
 		speed.value = Number.parseFloat(text) * 1000;
 	} catch {}
 }
 
 function clearBoard() {
-	cells.value = createGrid({ size });
+	cells.value = createGrid({
+		size,
+		antIndex: Math.floor(Math.random() * size * size),
+	});
+	textarea.value = "";
 }
 
 async function run() {
@@ -241,4 +274,18 @@ onMounted(() => {
 	doc.addEventListener("keydown", listener);
 	onUnmounted(() => doc.removeEventListener("keydown", listener));
 });
+
+function Control(props: any, { slots }) {
+	const { class: className, ...rest } = props;
+	const classes = [
+		"rounded",
+		"shadow focus:shadow-lg active:shadow-lg hover:shadow-lg",
+		"flex items-center justify-center aspect-[1/1]",
+		"bg-white text-yellow-400",
+		"outline-none focus:ring-1 ring-yellow-400",
+		className,
+	];
+	const newProps = { ...rest, class: classes };
+	return h("button", newProps, slots);
+}
 </script>

@@ -24,5 +24,8 @@ export default defineNuxtConfig({
 				href: "https://fav.farm/%F0%9F%90%9C",
 			},
 		],
+		bodyAttrs: {
+			class: "bg-amber-50",
+		},
 	},
 });
