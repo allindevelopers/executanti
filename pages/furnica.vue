@@ -235,6 +235,7 @@ onMounted(() => {
 	function listener(e: KeyboardEvent) {
 		if (doc.activeElement.parentElement === grid.value) return;
 		if (!includes(arrowCodes, e.code)) return;
+		e.preventDefault();
 		moveAnt(e.code);
 	}
 	doc.addEventListener("keydown", listener);
