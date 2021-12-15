@@ -17,10 +17,8 @@
 				{{ cell.char }}
 			</button>
 		</div>
-		<div
-			class="grid gap-px grid-cols-7 sm:grid-cols-10 my-4 border border-transparent"
-		>
-			<Control @click="run" class="rounded-l-xl" title="Run">
+		<div class="flex flex-wrap gap-2 my-4 border border-transparent">
+			<Control @click="run" title="Run">
 				<PlayIcon class="h-6 w-6" />
 			</Control>
 			<Control @click="cellEdit" title="Edit focused cell">
@@ -38,20 +36,24 @@
 					{{ speed / 1000 }}s
 				</span>
 			</Control>
-			<Control @click="setAsAnt" title="Set current cell as Ant">
+			<Control
+				@click="setAsAnt"
+				title="Set current cell as Ant"
+				class="text-2xl"
+			>
 				🐜
 			</Control>
 			<Control @click="clearBoard" title="Clear board">
 				<TrashIcon class="h-6 w-6" />
 			</Control>
-			<Control @click="helpClick" class="rounded-r-xl">
+			<Control @click="helpClick" title="Help">
 				<QuestionIcon class="h-6 w-6" />
 			</Control>
 		</div>
 		<div class="fixed bottom-0 right-0 m-4">
 			<Joystick @click="joystickMove" v-model:record="record" />
 		</div>
-		<div class="my-4 flex gap-px bg-gray-200 rounded-xl">
+		<div class="flex gap-px bg-gray-200 rounded-xl">
 			<textarea
 				class="flex-grow p-4 font-mono uppercase resize-none rounded-l-xl border-r-1"
 				placeholder="Code goes here..."
@@ -278,11 +280,9 @@ onMounted(() => {
 function Control(props: any, { slots }) {
 	const { class: className, ...rest } = props;
 	const classes = [
-		"rounded",
-		"shadow focus:shadow-lg active:shadow-lg hover:shadow-lg",
-		"flex items-center justify-center aspect-[1/1]",
-		"bg-white text-yellow-400",
-		"outline-none focus:ring-1 ring-yellow-400",
+		"flex items-center justify-center rounded-xl w-[50px] aspect-[1/1]",
+		"bg-white hover:bg-gray-50 shadow-md active:shadow",
+		"outline-none focus:ring-1 ring-yellow-400 text-yellow-400",
 		className,
 	];
 	const newProps = { ...rest, class: classes };
