@@ -122,24 +122,15 @@ executable_statements
         %}
 
 executable_statement
-   -> var_assignment       {% id %}
-   |  call_statement       {% id %}
+   -> call_statement       {% id %}
    |  line_comment         {% id %}
    |  while_loop           {% id %}
    |  if_statement         {% id %}
    |  for_loop             {% id %}
-
-var_assignment
-    -> identifier _ "=" _ expression
-        {%
-            d => ({
-                type: "var_assignment",
-                var_name: d[0],
-                value: d[4],
-                start: d[0].start,
-                end: d[4].end
-            })
-        %}
+   |  up                   {% id %}
+   |  down                 {% id %}
+   |  right                {% id %}
+   |  left                 {% id %}
 
 call_statement -> call_expression  {% id %}
 
