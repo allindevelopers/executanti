@@ -329,7 +329,6 @@ unary_expression
             })
         %}
     |  call_expression      {% id %}
-    |  list_literal         {% id %}
     |  dictionary_literal   {% id %}
     |  boolean_literal      {% id %}
     |  indexed_access       {% id %}
@@ -337,17 +336,6 @@ unary_expression
     |  "(" expression ")"
         {%
             data => data[1]
-        %}
-
-list_literal
-    -> "[" list_items "]"
-        {%
-            d => ({
-                type: "list_literal",
-                items: d[1],
-                start: tokenStart(d[0]),
-                end: tokenEnd(d[2])
-            })
         %}
 
 list_items
