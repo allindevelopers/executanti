@@ -167,18 +167,6 @@ call_expression
             })
         %}
 
-indexed_access
-    -> unary_expression _ "[" _ expression _ "]"
-        {%
-            d => ({
-                type: "indexed_access",
-                subject: d[0],
-                index: d[4],
-                start: d[0].start,
-                end: tokenEnd(d[6])
-            })
-        %}
-
 while_loop
     -> "while" __ expression __ code_block
         {%
@@ -330,7 +318,6 @@ unary_expression
         %}
     |  call_expression      {% id %}
     |  boolean_literal      {% id %}
-    |  indexed_access       {% id %}
     |  fun_expression       {% id %}
     |  "(" expression ")"
         {%
