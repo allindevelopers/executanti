@@ -127,7 +127,7 @@ executable_statement
 call_statement -> call_expression  {% id %}
 
 call_expression
-    -> identifier _ "(" argument_list ")"
+    -> execute identifier
         {%
             d => ({
                 type: "call_expression",
@@ -197,14 +197,6 @@ for_loop
                 start: tokenStart(d[0]),
                 end: d[8].end
             })
-        %}
-
-argument_list
-    -> null {% () => [] %}
-    |  _ expression _  {% d => [d[1]] %}
-    |  _ expression _ "," argument_list
-        {%
-            d => [d[1], ...d[4]]
         %}
 
 expression -> boolean_expression         {% id %}
