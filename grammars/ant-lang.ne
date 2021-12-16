@@ -126,7 +126,6 @@ executable_statement
    |  var_assignment       {% id %}
    |  call_statement       {% id %}
    |  line_comment         {% id %}
-   |  indexed_assignment   {% id %}
    |  while_loop           {% id %}
    |  if_statement         {% id %}
    |  for_loop             {% id %}
@@ -177,19 +176,6 @@ indexed_access
                 index: d[4],
                 start: d[0].start,
                 end: tokenEnd(d[6])
-            })
-        %}
-
-indexed_assignment
-    -> unary_expression _ "[" _ expression _ "]" _ "=" _ expression
-        {%
-            d => ({
-                type: "indexed_assignment",
-                subject: d[0],
-                index: d[4],
-                value: d[10],
-                start: d[0].start,
-                end: d[10].end
             })
         %}
 
@@ -343,7 +329,6 @@ unary_expression
             })
         %}
     |  call_expression      {% id %}
-    |  string_literal       {% id %}
     |  list_literal         {% id %}
     |  dictionary_literal   {% id %}
     |  boolean_literal      {% id %}
@@ -440,8 +425,6 @@ fun_expression
 
 line_comment -> %comment {% convertTokenId %}
 
-string_literal -> %string_literal {% convertTokenId %}
-
 number -> %number_literal {% convertTokenId %}
 
 identifier -> %identifier {% convertTokenId %}
@@ -459,25 +442,25 @@ _ -> %ws:*
 # This can be externalized into a lexer
 # That would allow multiple languages
 
-BEGIN -> "BEGIN" {% id %}
-END -> "END" {% id %}
+begin -> %begin {% id %}
+end -> %end {% id %}
 
-UP -> "UP" {% id %}
-DOWN -> "DOWN" {% id %}
-RIGHT -> "RIGHT" {% id %}
-LEFT -> "LEFT" {% id %}
+up -> %up {% id %}
+down -> %down {% id %}
+right -> %right {% id %}
+left -> %left {% id %}
 
-WHILE -> "LEFT" {% id %}
-EXECUTE -> "EXECUTE" {% id %}
+while -> %while {% id %}
+execute -> %execute {% id %}
 
-REPEAT -> "REPEAT" {% id %}
-TIMES -> "TIMES" {% id %}
+repeat -> %repeat {% id %}
+times -> %times {% id %}
 
-IF -> "IF" {% id %}
-THEN -> "THEN" {% id %}
-ELSE -> "ELSE" {% id %}
+if -> %if {% id %}
+then -> %then {% id %}
+else -> %else {% id %}
 
-IS_MARGIN -> "IS_MARGIN" {% id %}
-IS_NOT_MARGIN -> "IS_NOT_MARGIN" {% id %}
+is_margin -> %is_margin {% id %}
+is_not_margin -> %is_not_margin {% id %}
 
-PROCEDURE -> "PROCEDURE" {% id %}
+procedure -> %procedure {% id %}
