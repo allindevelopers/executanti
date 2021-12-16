@@ -317,31 +317,10 @@ unary_expression
             })
         %}
     |  call_expression      {% id %}
-    |  boolean_literal      {% id %}
     |  fun_expression       {% id %}
     |  "(" expression ")"
         {%
             data => data[1]
-        %}
-
-boolean_literal
-    -> "true"
-        {%
-            d => ({
-                type: "boolean_literal",
-                value: true,
-                start: tokenStart(d[0]),
-                end: tokenEnd(d[0])
-            })
-        %}
-    |  "false"
-        {%
-            d => ({
-                type: "boolean_literal",
-                value: false,
-                start: tokenStart(d[0]),
-                end: tokenEnd(d[0])
-            })
         %}
 
 fun_expression
