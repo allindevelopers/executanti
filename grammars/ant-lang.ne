@@ -122,24 +122,12 @@ executable_statements
         %}
 
 executable_statement
-   -> return_statement     {% id %}
-   |  var_assignment       {% id %}
+   -> var_assignment       {% id %}
    |  call_statement       {% id %}
    |  line_comment         {% id %}
    |  while_loop           {% id %}
    |  if_statement         {% id %}
    |  for_loop             {% id %}
-
-return_statement
-   -> "return" __ expression
-       {%
-           d => ({
-               type: "return_statement",
-               value: d[2],
-               start: tokenStart(d[0]),
-               end: d[2].end
-           })
-       %}
 
 var_assignment
     -> identifier _ "=" _ expression
