@@ -66,7 +66,7 @@ top_level_statement
     |  line_comment     {% id %}
 
 fun_definition
-    -> "fun" __ identifier _ "(" _ parameter_list _ ")" _ code_block
+    -> "fun" __ identifier __ code_block
         {%
             d => ({
                 type: "fun_definition",
@@ -79,7 +79,7 @@ fun_definition
         %}
 
 proc_definition
-    -> "proc" __ identifier _ "(" _ parameter_list _ ")" _ code_block
+    -> "proc" __ identifier __ code_block
         {%
             d => ({
                 type: "proc_definition",
@@ -89,14 +89,6 @@ proc_definition
                 start: tokenStart(d[0]),
                 end: d[10].end
             })
-        %}
-
-parameter_list
-    -> null        {% () => [] %}
-    | identifier   {% d => [d[0]] %}
-    | identifier _ "," _ parameter_list
-        {%
-            d => [d[0], ...d[4]]
         %}
 
 code_block -> "[" executable_statements "]"
