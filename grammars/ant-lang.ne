@@ -329,54 +329,12 @@ unary_expression
             })
         %}
     |  call_expression      {% id %}
-    |  dictionary_literal   {% id %}
     |  boolean_literal      {% id %}
     |  indexed_access       {% id %}
     |  fun_expression       {% id %}
     |  "(" expression ")"
         {%
             data => data[1]
-        %}
-
-list_items
-    -> null
-        {% () => [] %}
-    |  _ml expression _ml
-        {% d => [d[1]] %}
-    |  _ml expression _ml "," list_items
-        {%
-            d => [
-                d[1],
-                ...d[4]
-            ]
-        %}
-
-dictionary_literal
-    -> "{" dictionary_entries "}"
-        {%
-            d => ({
-                type: "dictionary_literal",
-                entries: d[1],
-                start: tokenStart(d[0]),
-                end: tokenEnd(d[2])
-            })
-        %}
-
-dictionary_entries
-    -> null  {% () => [] %}
-    |  _ml dictionary_entry _ml
-        {%
-            d => [d[1]]
-        %}
-    |  _ml dictionary_entry _ml "," dictionary_entries
-        {%
-            d => [d[1], ...d[4]]
-        %}
-
-dictionary_entry
-    -> identifier _ml ":" _ml expression
-        {%
-            d => [d[0], d[4]]
         %}
 
 boolean_literal
