@@ -317,22 +317,9 @@ unary_expression
             })
         %}
     |  call_expression      {% id %}
-    |  fun_expression       {% id %}
     |  "(" expression ")"
         {%
             data => data[1]
-        %}
-
-fun_expression
-    -> "fun" _ "(" _ parameter_list _ ")" _ code_block
-        {%
-            d => ({
-                type: "fun_expression",
-                parameters: d[4],
-                body: d[8],
-                start: tokenStart(d[0]),
-                end: d[8].end
-            })
         %}
 
 line_comment -> %comment {% convertTokenId %}
