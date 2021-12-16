@@ -1,10 +1,8 @@
-import nearley from "nearley";
-import compile from "nearley/lib/compile.js";
-import generate from "nearley/lib/generate.js";
-import nearleyGrammar from "nearley/lib/nearley-language-bootstrapped.js";
-import fs from 'fs'
-
-const { Parser, Grammar } = nearley
+const { Parser, Grammar } = require("nearley");
+const compile = require("nearley/lib/compile.js");
+const generate = require("nearley/lib/generate.js");
+const nearleyGrammar = require("nearley/lib/nearley-language-bootstrapped.js");
+const fs = require("fs");
 
 function compileGrammar(sourceCode) {
 	// Parse the grammar source into an AST
@@ -26,26 +24,23 @@ function compileGrammar(sourceCode) {
 	return module.exports;
 }
 
-const ant = fs.readFileSync('./grammars/ant.ne', { encoding: 'utf8' })
-
+const ant = fs.readFileSync("./grammars/ant-lang.ne", { encoding: "utf8" });
 
 const rules = compileGrammar(ant);
 
-const grammar = Grammar.fromCompiled(rules)
+const grammar = Grammar.fromCompiled(rules);
 
 const parser = new Parser(grammar);
 
-const inFile = fs.readFileSync('./grammars/input.ant', 'utf8')
-parser.feed(inFile)
+const inFile = fs.readFileSync("./grammars/input.ant", "utf8");
+parser.feed(inFile);
 
-const [result] = parser.finish()
+const [result] = parser.finish();
 
-fs.writeFileSync('./grammars/output.json', JSON.stringify(result, null, "\t"))
+fs.writeFileSync("./grammars/output.json", JSON.stringify(result, null, "\t"));
 
 function evaluate(json) {
 	// ...
 }
 
-
-
-evaluate({})
+evaluate({});
