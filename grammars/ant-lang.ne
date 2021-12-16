@@ -61,9 +61,9 @@ top_level_statements
         %}
 
 top_level_statement
-    -> fun_definition   {% id %}
-    |  proc_definition  {% id %}
-    |  line_comment     {% id %}
+    -> fun_definition    {% id %}
+    |  proc_definition   {% id %}
+    |  comment_statement {% id %}
 
 fun_definition
     -> "fun" __ identifier __ code_block
@@ -115,10 +115,10 @@ executable_statements
 
 executable_statement
    -> call_statement       {% id %}
-   |  line_comment         {% id %}
-   |  while_loop           {% id %}
+   |  comment_statement    {% id %}
+   |  while_statement      {% id %}
    |  if_statement         {% id %}
-   |  for_loop             {% id %}
+   |  repeat_statement     {% id %}
    |  up                   {% id %}
    |  down                 {% id %}
    |  right                {% id %}
@@ -138,11 +138,11 @@ call_expression
             })
         %}
 
-while_loop
+while_statement
     -> "while" __ expression __ code_block
         {%
             d => ({
-                type: "while_loop",
+                type: "while_statement",
                 condition: d[2],
                 body: d[4],
                 start: tokenStart(d[0]),
@@ -186,11 +186,11 @@ if_statement
             })
        %}
 
-for_loop
+repeat_statement
     -> "for" __ identifier __ "in" __ expression _ code_block
         {%
             d => ({
-                type: "for_loop",
+                type: "repeat_statement",
                 loop_variable: d[2],
                 iterable: d[6],
                 body: d[8],
@@ -285,7 +285,7 @@ unary_expression
             data => data[1]
         %}
 
-line_comment -> %comment {% convertTokenId %}
+comment_statement -> %comment {% convertTokenId %}
 
 number -> %number_literal {% convertTokenId %}
 
