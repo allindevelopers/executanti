@@ -201,7 +201,7 @@ down -> %kw_down {% id %}
 right -> %kw_right {% id %}
 left -> %kw_left {% id %}
 
-while -> %kw_kvWhile {% id %}
+while -> %kw_while {% id %}
 execute -> %kw_execute {% id %}
 
 repeat -> %kw_repeat {% id %}
