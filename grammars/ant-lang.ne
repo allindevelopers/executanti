@@ -139,9 +139,9 @@ while_statement
             d => ({
                 type: "while_statement",
                 condition: d[2],
-                body: d[6],
+                body: d[4],
                 start: tokenStart(d[0]),
-                end: d[6].end
+                end: d[4].end
             })
         %}
 
@@ -174,9 +174,9 @@ repeat_statement
             d => ({
                 type: "repeat_statement",
                 iterable: d[2],
-                body: d[6],
+                body: d[4],
                 start: tokenStart(d[0]),
-                end: d[6].end
+                end: d[4].end
             })
         %}
 
