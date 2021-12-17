@@ -219,15 +219,6 @@ boolean_operator
 
 unary_expression
     -> number               {% id %}
-    |  identifier
-        {%
-            d => ({
-                type: "var_reference",
-                var_name: d[0],
-                start: d[0].start,
-                end: d[0].end
-            })
-        %}
     |  "(" expression ")"
         {%
             data => data[1]
