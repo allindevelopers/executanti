@@ -19,6 +19,7 @@ function compileGrammar(sourceCode) {
 
 	// Pretend this is a CommonJS environment to catch exports from the grammar.
 	const module = { exports: {} };
+
 	eval(grammarJs);
 
 	return module.exports;

@@ -3,10 +3,6 @@ const moo = require("moo");
 const lexer = moo.compile({
 	ws: /[ \t]+/,
 	nl: { match: "\n", lineBreaks: true },
-	lparan: "(",
-	rparan: ")",
-	lbracket: "[",
-	rbracket: "]",
 	comment: {
 		match: /#[^\n]*/,
 		value: (s) => s.substring(1),
@@ -16,7 +12,7 @@ const lexer = moo.compile({
 		value: (s) => Number(s),
 	},
 	identifier: {
-		match: /[a-z_][a-z_0-9]*/,
+		match: /[a-zA-Z]*/,
 		type: moo.keywords({
 			begin: "BEGIN",
 			end: "END",
@@ -26,7 +22,7 @@ const lexer = moo.compile({
 			right: "RIGHT",
 			left: "LEFT",
 
-			while: "LEFT",
+			while: "WHILE",
 			execute: "EXECUTE",
 
 			repeat: "REPEAT",
