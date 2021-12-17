@@ -193,25 +193,25 @@ _ -> %ws:*
 
 # Externalized tokens allow multiple languages
 
-begin -> %begin {% id %}
-end -> %end {% id %}
+begin -> %kw_begin {% id %}
+end -> %kw_end {% id %}
 
-up -> %up {% id %}
-down -> %down {% id %}
-right -> %right {% id %}
-left -> %left {% id %}
+up -> %kw_up {% id %}
+down -> %kw_down {% id %}
+right -> %kw_right {% id %}
+left -> %kw_left {% id %}
 
-while -> %while {% id %}
-execute -> %execute {% id %}
+while -> %kw_kvWhile {% id %}
+execute -> %kw_execute {% id %}
 
-repeat -> %repeat {% id %}
-times -> %times {% id %}
+repeat -> %kw_repeat {% id %}
+times -> %kw_times {% id %}
 
-if -> %if {% id %}
-then -> %then {% id %}
-else -> %else {% id %}
+if -> %kw_if {% id %}
+then -> %kw_then {% id %}
+else -> %kw_else {% id %}
 
-is_margin -> %is_margin {% id %}
-is_not_margin -> %is_not_margin {% id %}
+is_margin -> %kw_is_margin {% id %}
+is_not_margin -> %kw_is_not_margin {% id %}
 
-procedure -> %procedure {% id %}
+procedure -> %kw_procedure {% id %}
