@@ -61,20 +61,19 @@ top_level_statements
         %}
 
 top_level_statement
-    -> fun_definition    {% id %}
+    -> main_definition    {% id %}
     |  proc_definition   {% id %}
     |  comment_statement {% id %}
 
-fun_definition
-    -> "fun" __ identifier __ code_block
+main_definition
+    -> begin __ code_block __ end
         {%
             d => ({
-                type: "fun_definition",
-                name: d[2],
-                parameters: d[6],
-                body: d[10],
+                type: "proc_definition",
+                name: "main",
+                body: d[2],
                 start: tokenStart(d[0]),
-                end: d[10].end
+                end: d[4].end
             })
         %}
 
