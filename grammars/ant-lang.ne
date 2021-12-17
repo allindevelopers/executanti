@@ -279,7 +279,6 @@ unary_expression
                 end: d[0].end
             })
         %}
-    |  call_expression      {% id %}
     |  "(" expression ")"
         {%
             data => data[1]
