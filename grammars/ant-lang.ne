@@ -181,27 +181,17 @@ repeat_statement
         %}
 
 expression
-    -> is_margin         {% id %}
-    |  is_not_margin     {% id %}
+    -> is_margin {% id %}
+    |  is_not_margin {% id %}
 
 comment_statement -> %comment {% convertTokenId %}
-
 number -> %number_literal {% convertTokenId %}
-
 identifier -> %identifier {% convertTokenId %}
 
-_ml -> multi_line_ws_char:*
-
-multi_line_ws_char
-    -> %ws
-    |  "\n"
-
 __ -> %ws:+
-
 _ -> %ws:*
 
-# This can be externalized into a lexer
-# That would allow multiple languages
+# Externalized tokens allow multiple languages
 
 begin -> %begin {% id %}
 end -> %end {% id %}
