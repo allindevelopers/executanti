@@ -200,8 +200,8 @@ repeat_statement
 expression -> boolean_expression         {% id %}
 
 boolean_expression
-    -> multiplicative_expression     {% id %}
-    |  multiplicative_expression _ boolean_operator _ boolean_expression
+    -> unary_expression     {% id %}
+    |  unary_expression _ boolean_operator _ boolean_expression
         {%
             d => ({
                 type: "binary_operation",
@@ -216,20 +216,6 @@ boolean_expression
 boolean_operator
     -> "and"      {% id %}
     |  "or"       {% id %}
-
-multiplicative_expression
-    -> unary_expression     {% id %}
-    |  unary_expression _ [*/%] _ multiplicative_expression
-        {%
-            d => ({
-                type: "binary_operation",
-                operator: convertToken(d[2]),
-                left: d[0],
-                right: d[4],
-                start: d[0].start,
-                end: d[4].end
-            })
-        %}
 
 unary_expression
     -> number               {% id %}
