@@ -134,52 +134,39 @@ call_statement
         %}
 
 while_statement
-    -> "while" __ expression __ code_block
+    -> while __ expression __ execute __ code_block
         {%
             d => ({
                 type: "while_statement",
                 condition: d[2],
-                body: d[4],
+                body: d[6],
                 start: tokenStart(d[0]),
-                end: d[4].end
+                end: d[6].end
             })
         %}
 
 if_statement
-    -> "if" __ expression __ code_block
+    -> if __ expression __ then __ code_block
         {%
             d => ({
                 type: "if_statement",
                 condition: d[2],
-                consequent: d[4],
+                consequent: d[6],
                 start: tokenStart(d[0]),
-                end: d[4].end
+                end: d[6].end
             })
         %}
-    |  "if" __ expression _ code_block _
-       "else" __ code_block
+    |  if __ expression __ then __ code_block __ else __ code_block
         {%
             d => ({
                 type: "if_statement",
                 condition: d[2],
-                consequent: d[4],
-                alternate: d[8],
+                consequent: d[6],
+                alternate: d[10],
                 start: tokenStart(d[0]),
-                end: d[8].end
+                end: d[10].end
             })
         %}
-    |  "if" __ expression _ code_block _
-       "else" __ if_statement
-       {%
-            d => ({
-                type: "if_statement",
-                condition: d[2],
-                consequent: d[4],
-                alternate: d[8],
-                start: tokenStart(d[0]),
-                end: d[8].end
-            })
-       %}
 
 repeat_statement
     -> repeat __ number __ times __ code_block
