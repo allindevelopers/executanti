@@ -78,15 +78,14 @@ main_definition
         %}
 
 proc_definition
-    -> "proc" __ identifier __ code_block
+    -> procedure __ identifier __ code_block
         {%
             d => ({
                 type: "proc_definition",
                 name: d[2],
-                parameters: d[6],
-                body: d[10],
+                body: d[4],
                 start: tokenStart(d[0]),
-                end: d[10].end
+                end: d[4].end
             })
         %}
 
