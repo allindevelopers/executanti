@@ -66,14 +66,14 @@ top_level_statement
     |  comment_statement {% id %}
 
 main_definition
-    -> begin __ code_block __ end
+    -> code_block
         {%
             d => ({
                 type: "proc_definition",
                 name: "main",
-                body: d[2],
+                body: d[0],
                 start: tokenStart(d[0]),
-                end: d[4].end
+                end: d[0].end
             })
         %}
 
@@ -89,7 +89,7 @@ proc_definition
             })
         %}
 
-code_block -> "[" executable_statements "]"
+code_block -> begin executable_statements end
     {%
         (d) => ({
             type: "code_block",
@@ -134,7 +134,7 @@ call_statement
         %}
 
 while_statement
-    -> while __ expression __ execute __ code_block
+    -> while __ expression __ code_block
         {%
             d => ({
                 type: "while_statement",
@@ -169,7 +169,7 @@ if_statement
         %}
 
 repeat_statement
-    -> repeat __ number __ times __ code_block
+    -> repeat __ number __ code_block
         {%
             d => ({
                 type: "repeat_statement",

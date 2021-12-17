@@ -1,29 +1,89 @@
-{
-	"type": "block",
-	"value": [
-		{
-			"type": "operation",
-			"value": "LEFT"
+[
+	{
+		"type": "proc_definition",
+		"name": {
+			"type": "identifier",
+			"value": "TEST",
+			"start": {
+				"line": 1,
+				"col": 10
+			},
+			"end": {
+				"line": 1,
+				"col": 14
+			}
 		},
-		{
-			"type": "operation",
-			"value": "RIGHT"
+		"body": {
+			"type": "code_block",
+			"statements": [
+				{
+					"type": "kw_left",
+					"value": "LEFT",
+					"text": "LEFT",
+					"offset": 22,
+					"lineBreaks": 0,
+					"line": 2,
+					"col": 2
+				},
+				{
+					"type": "kw_right",
+					"value": "RIGHT",
+					"text": "RIGHT",
+					"offset": 28,
+					"lineBreaks": 0,
+					"line": 3,
+					"col": 2
+				}
+			],
+			"start": {
+				"line": 1,
+				"col": 15
+			},
+			"end": {
+				"line": 4,
+				"col": 3
+			}
 		},
-		{
-			"type": "operation",
-			"value": "UP"
+		"start": {
+			"line": 1,
+			"col": 0
 		},
-		{
-			"type": "operation",
-			"value": "DOWN"
-		},
-		{
-			"type": "operation",
-			"value": "DOWN"
-		},
-		{
-			"type": "operation",
-			"value": "UP"
+		"end": {
+			"line": 4,
+			"col": 3
 		}
-	]
-}
+	},
+	{
+		"type": "proc_definition",
+		"name": "main",
+		"body": {
+			"type": "code_block",
+			"statements": [
+				{
+					"type": "kw_left",
+					"value": "LEFT",
+					"text": "LEFT",
+					"offset": 46,
+					"lineBreaks": 0,
+					"line": 7,
+					"col": 2
+				}
+			],
+			"start": {
+				"line": 6,
+				"col": 0
+			},
+			"end": {
+				"line": 8,
+				"col": 3
+			}
+		},
+		"start": {
+			"col": null
+		},
+		"end": {
+			"line": 8,
+			"col": 3
+		}
+	}
+]

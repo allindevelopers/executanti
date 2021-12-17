@@ -37,7 +37,7 @@ const lexer = moo.compile({
 		value: (s) => Number(s),
 	},
 	identifier: {
-		match: /[a-z_][a-z_0-9]*/,
+		match: /[a-zA-Z_][a-zA-Z_0-9]*/,
 		type: moo.keywords(keywords),
 	},
 	...keywords,
