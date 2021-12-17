@@ -61,7 +61,7 @@ top_level_statements
         %}
 
 top_level_statement
-    -> main_definition    {% id %}
+    -> main_definition   {% id %}
     |  proc_definition   {% id %}
     |  comment_statement {% id %}
 
@@ -122,17 +122,14 @@ executable_statement
    |  right                {% id %}
    |  left                 {% id %}
 
-call_statement -> call_expression  {% id %}
-
-call_expression
+call_statement
     -> execute identifier
         {%
             d => ({
-                type: "call_expression",
-                fun_name: d[0],
-                arguments: d[3],
+                type: "call_statement",
+                fun_name: d[1],
                 start: d[0].start,
-                end: tokenEnd(d[4])
+                end: tokenEnd(d[1])
             })
         %}
 
