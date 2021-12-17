@@ -186,15 +186,14 @@ if_statement
        %}
 
 repeat_statement
-    -> "for" __ identifier __ "in" __ expression _ code_block
+    -> repeat __ number __ times __ code_block
         {%
             d => ({
                 type: "repeat_statement",
-                loop_variable: d[2],
-                iterable: d[6],
-                body: d[8],
+                iterable: d[2],
+                body: d[6],
                 start: tokenStart(d[0]),
-                end: d[8].end
+                end: d[6].end
             })
         %}
 
