@@ -5,7 +5,7 @@
 		"build": "nuxi build",
 		"start": "node .output/server/index.mjs",
 		"prepare": "husky install",
-		"grammar": "npx nodemon -e ne,mjs,ant grammars/index.js"
+		"grammar": "npx nodemon -e ne,js,ant grammars/index.js"
 	},
 	"devDependencies": {
 		"@tailwindcss/forms": "^0.4.0",

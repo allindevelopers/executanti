@@ -1,37 +1,6 @@
 @{%
 const lexer = require("./lexer");
-
-function tokenStart(token) {
-    return {
-        line: token.line,
-        col: token.col - 1
-    };
-}
-
-function tokenEnd(token) {
-    const lastNewLine = token.text.lastIndexOf("\n");
-    if (lastNewLine !== -1) {
-        throw new Error("Unsupported case: token with line breaks");
-    }
-    return {
-        line: token.line,
-        col: token.col + token.text.length - 1
-    };
-}
-
-function convertToken(token) {
-    return {
-        type: token.type,
-        value: token.value,
-        start: tokenStart(token),
-        end: tokenEnd(token)
-    };
-}
-
-function convertTokenId(data) {
-    return convertToken(data[0]);
-}
-
+const { tokenStart, tokenEnd, convertTokenId } = require('./utils')
 %}
 
 @lexer lexer
@@ -39,26 +8,15 @@ function convertTokenId(data) {
 input -> top_level_statements {% id %}
 
 top_level_statements
-    ->  top_level_statement
-        {%
-            d => [d[0]]
-        %}
+    -> top_level_statement
+        {% d => [d[0]] %}
     |  top_level_statement _ "\n" _ top_level_statements
-        {%
-            d => [
-                d[0],
-                ...d[4]
-            ]
-        %}
+        {% d => [d[0], ...d[4]] %}
     # below 2 sub-rules handle blank lines
     |  _ "\n" top_level_statements
-        {%
-            d => d[2]
-        %}
+        {% d => d[2] %}
     |  _
-        {%
-            d => []
-        %}
+        {% d => [] %}
 
 top_level_statement
     -> main_definition   {% id %}
@@ -107,9 +65,7 @@ executable_statements
     |  _ executable_statement _
         {% d => [d[1]] %}
     |  _ executable_statement _ "\n" executable_statements
-        {%
-            d => [d[1], ...d[4]]
-        %}
+        {% d => [d[1], ...d[4]] %}
 
 executable_statement
    -> call_statement       {% id %}
