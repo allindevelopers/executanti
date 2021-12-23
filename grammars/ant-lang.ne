@@ -24,36 +24,34 @@ top_level_statement
     |  comment_statement {% id %}
 
 main_definition
-    -> code_block
+    -> main_begin _ code_block _ main_end
         {%
             d => ({
                 type: "proc_definition",
                 name: "main",
-                body: d[0],
+                body: d[2],
                 start: tokenStart(d[0]),
-                end: d[0].end
+                end: tokenEnd(d[4])
             })
         %}
 
 proc_definition
-    -> procedure __ identifier __ code_block
+    -> procedure __ identifier __ main_begin _ code_block _ main_end
         {%
             d => ({
                 type: "proc_definition",
                 name: d[2],
-                body: d[4],
+                body: d[6],
                 start: tokenStart(d[0]),
-                end: d[4].end
+                end: tokenEnd(d[8])
             })
         %}
 
-code_block -> begin executable_statements end
+code_block -> executable_statements
     {%
         (d) => ({
             type: "code_block",
-            statements: d[1],
-            start: tokenStart(d[0]),
-            end: tokenEnd(d[2])
+            statements: d[0],
         })
     %}
 
@@ -79,60 +77,60 @@ executable_statement
    |  left                 {% id %}
 
 call_statement
-    -> execute identifier
+    -> execute __ identifier
         {%
             d => ({
                 type: "call_statement",
-                fun_name: d[1],
+                fun_name: d[2],
                 start: d[0].start,
-                end: tokenEnd(d[1])
+                end: d[2].end
             })
         %}
 
 while_statement
-    -> while __ expression __ code_block
+    -> while __ expression __ main_begin _ code_block _ main_end
         {%
             d => ({
                 type: "while_statement",
                 condition: d[2],
-                body: d[4],
+                body: d[6],
                 start: tokenStart(d[0]),
-                end: d[4].end
+                end: tokenEnd(d[8])
             })
         %}
 
 if_statement
-    -> if __ expression __ then __ code_block
+    -> if __ expression __ then __ main_begin _ code_block _ main_end
         {%
             d => ({
                 type: "if_statement",
                 condition: d[2],
-                consequent: d[6],
+                consequent: d[8],
                 start: tokenStart(d[0]),
-                end: d[6].end
+                end: tokenEnd(d[10])
             })
         %}
-    |  if __ expression __ then __ code_block __ else __ code_block
+    |  if __ expression __ then __ main_begin _ code_block _ main_end __ else __ main_begin _ code_block _ main_end
         {%
             d => ({
                 type: "if_statement",
                 condition: d[2],
-                consequent: d[6],
-                alternate: d[10],
+                consequent: d[8],
+                alternate: d[16],
                 start: tokenStart(d[0]),
-                end: d[10].end
+                end: tokenEnd(d[18])
             })
         %}
 
 repeat_statement
-    -> repeat __ number __ code_block
+    -> repeat __ number __ main_begin _ code_block _ main_end
         {%
             d => ({
                 type: "repeat_statement",
                 iterable: d[2],
-                body: d[4],
+                body: d[6],
                 start: tokenStart(d[0]),
-                end: d[4].end
+                end: tokenEnd(d[8])
             })
         %}
 
@@ -149,8 +147,8 @@ _ -> %ws:*
 
 # Externalized tokens allow multiple languages
 
-begin -> %kw_begin {% id %}
-end -> %kw_end {% id %}
+main_begin -> %kw_main_begin {% id %}
+main_end -> %kw_main_end {% id %}
 
 up -> %kw_up {% id %}
 down -> %kw_down {% id %}

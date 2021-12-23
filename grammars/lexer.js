@@ -1,8 +1,8 @@
 const moo = require("moo");
 
 const keywords = {
-	kw_begin: "BEGIN",
-	kw_end: "END",
+	kw_main_begin: "BEGIN",
+	kw_main_end: "END",
 
 	kw_up: "UP",
 	kw_down: "DOWN",
